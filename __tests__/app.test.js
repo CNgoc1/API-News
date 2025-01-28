@@ -1,4 +1,5 @@
 const endpointsJson = require("../endpoints.json");
+require("jest-sorted");
 
 /* Set up your test imports here */
 const request = require("supertest");
@@ -41,15 +42,9 @@ describe("GET /api/topics", () => {
         });
       });
   });
+});
 
-  test("404: Responds with not found when given invalid endpoint", () => {
-    return request(app)
-      .get("/api/invalid")
-      .expect(404)
-      .then(({ body: { msg } }) => {
-        expect(msg).toBe("Not found");
-      });
-  });
+describe("Get /api/invalid", () => {
   test("404: Responds with not found when given invalid endpoint", () => {
     return request(app)
       .get("/api/invalid")
@@ -60,8 +55,31 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe.only("GET /api/articles/(query)", () => {
-  test("200: Responds with specific article based on ID", () => {
+describe.only("GET /api/articles", () => {
+  test("200: responds with all articles in order of date", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSorted({ key: "created_at", descending: true });
+        articles.forEach((article) => {
+          expect(article.body).toBeUndefined(),
+            expect(article).toEqual({
+              article_id: expect.any(Number),
+              created_at: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              author: expect.any(String),
+              article_img_url: expect.any(String),
+              votes: expect.any(Number),
+            });
+        });
+      });
+  });
+});
+
+describe("GET /api/articles/(query)", () => {
+  test("200: responds with specific article based on ID", () => {
     const result = {
       title: "Living in the shadow of a great man",
       topic: "mitch",
@@ -83,7 +101,7 @@ describe.only("GET /api/articles/(query)", () => {
         expect(article.article_img_url).toEqual(result.article_img_url);
       });
   });
-  test("400: Responds with bad request when given invalid article ID", () => {
+  test("400: responds with bad request when given invalid article ID", () => {
     return request(app)
       .get("/api/articles/invalid")
       .expect(400)
