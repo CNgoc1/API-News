@@ -16,4 +16,20 @@ function fetchArticle(id) {
     });
 }
 
-module.exports = fetchArticle;
+function fetchArticles() {
+  return db
+    .query(`SELECT * FROM articles ORDER BY articles.created_at DESC`)
+    .then((result) => {
+      const formattedArticles = result.rows.map((article) => {
+        const { body, ...rest } = article;
+        return {
+          ...rest,
+          created_at: new Date(article.created_at).getTime(),
+        };
+      });
+      console.log(formattedArticles);
+      return formattedArticles;
+    });
+}
+
+module.exports = { fetchArticle, fetchArticles };
