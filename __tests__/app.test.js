@@ -55,7 +55,7 @@ describe("Get /api/invalid", () => {
   });
 });
 
-describe.only("GET /api/articles", () => {
+describe("GET /api/articles", () => {
   test("200: responds with all articles in order of date", () => {
     return request(app)
       .get("/api/articles")
@@ -109,13 +109,38 @@ describe("GET /api/articles/(query)", () => {
         expect(msg).toEqual("Bad request");
       });
   });
-
-  test("404: Responds with bad request when given non existent article id", () => {
+  test("404: responds with bad request when given non existent article id", () => {
     return request(app)
       .get("/api/articles/9999")
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toEqual("Not found");
+      });
+  });
+  test("200: responds with comments of article_id", () => {
+    return request(app)
+      .get("/api/article/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toBeSorted({ key: "created_at", descending: true });
+        comments.forEach((comment) => {
+          expect(comment).toEqual({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+      });
+  });
+  test("200: responds with no comments of a valid article_id", () => {
+    return request(app)
+      .get("/api/article/4/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toEqual([]);
       });
   });
 });
