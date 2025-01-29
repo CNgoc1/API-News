@@ -209,6 +209,33 @@ describe("POST /api/articles/:article_id/comment", () => {
   });
 });
 
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("200: successfully deletes comment based on id", () => {
+    return request(app)
+      .delete("/api/comments/2")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("400: responds with bad request when given invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/invalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("404: responds with bad request when given non existent comment_id", () => {
+    return request(app)
+      .delete("/api/comments/9999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
+      });
+  });
+
 describe("PATCH /api/articles/:article_id", () => {
   test("200: responds with added vote in updated article", () => {
     const updateArticle = { inc_Vote: 1 };
@@ -246,4 +273,5 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 
   // previously did 404 non existent article_id
+
 });
