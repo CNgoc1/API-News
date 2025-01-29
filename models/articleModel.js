@@ -26,7 +26,6 @@ function fetchArticles() {
           created_at: new Date(article.created_at).getTime(),
         };
       });
-      console.log(formattedArticles);
       return formattedArticles;
     });
 }
@@ -60,9 +59,28 @@ function addComment(comment, id) {
     });
 }
 
+function updateArticle(newVotes, id) {
+  const { inc_Vote } = newVotes;
+  if (isNaN(inc_Vote) || !inc_Vote || inc_Vote === 0) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request",
+    });
+  }
+  return db
+    .query(
+      `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
+      [inc_Vote, id]
+    )
+    .then((result) => {
+      return result.rows[0];
+    });
+}
+
 module.exports = {
   fetchArticle,
   fetchArticles,
   fetchArticleComments,
   addComment,
+  updateArticle,
 };
