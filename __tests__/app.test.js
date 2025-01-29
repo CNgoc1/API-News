@@ -144,3 +144,67 @@ describe("GET /api/articles/(query)", () => {
       });
   });
 });
+
+describe.only("POST /api/articles/:article_id/comment", () => {
+  test("201: adds and responds with the new comment", () => {
+    const comment = {
+      username: "butter_bridge",
+      body: "I am testing for status code 201 wish me good luck",
+      article_id: 2,
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.body).toEqual({
+          comment_id: 19,
+          body: "I am testing for status code 201 wish me good luck",
+          article_id: 2,
+          author: "butter_bridge",
+          votes: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("400: responds with bad request when given missing properties", () => {
+    const comment = {
+      username: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  test("404: responds with not found when username does not exist", () => {
+    const comment = {
+      username: "Christian",
+      body: "Hello",
+      article_id: 2,
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("User not found");
+      });
+  });
+  test("404: responds with not found when article_id does not exist", () => {
+    const comment = {
+      username: "Christian",
+      body: "Hello",
+      article_id: 999,
+    };
+    return request(app)
+      .post("/api/articles/999/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not found");
+      });
+  });
+});
