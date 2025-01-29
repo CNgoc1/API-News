@@ -2,8 +2,10 @@ const {
   fetchArticle,
   fetchArticles,
   fetchArticleComments,
+  addComment,
 } = require("../models/articleModel");
 
+const checkUserExists = require("../checkUserExists.js");
 const checkArticleExists = require("../checkArticleExists");
 
 function getArticle(req, res, next) {
@@ -35,4 +37,27 @@ function getArticleComment(req, res, next) {
     .catch(next);
 }
 
-module.exports = { getArticle, getArticles, getArticleComment };
+function postArticleComment(req, res, next) {
+  const { body } = req;
+  const { article_id } = req.params;
+  const { username } = body;
+
+  checkArticleExists(article_id)
+    .then(() => {
+      return checkUserExists(username);
+    })
+    .then(() => {
+      return addComment(body, article_id);
+    })
+    .then((comment) => {
+      res.status(201).send({ body: comment });
+    })
+    .catch(next);
+}
+
+module.exports = {
+  getArticle,
+  getArticles,
+  getArticleComment,
+  postArticleComment,
+};
