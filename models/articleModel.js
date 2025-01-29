@@ -15,8 +15,8 @@ function fetchArticle(id) {
     });
 }
 
-function fetchArticles(sort_by = "created_at", order = "desc") {
-  validSortBy = [
+function fetchArticles(sort_by = "created_at", order = "desc", topic) {
+  const validSortBy = [
     "article_id",
     "title",
     "topic",
@@ -26,7 +26,9 @@ function fetchArticles(sort_by = "created_at", order = "desc") {
     "votes",
     "article_img_url",
   ];
-  validOrder = ["desc", "asc"];
+  const validOrder = ["desc", "asc"];
+
+  const validTopics = ["mitch", "cats", "paper"];
 
   if (!validSortBy.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
@@ -34,19 +36,29 @@ function fetchArticles(sort_by = "created_at", order = "desc") {
   if (!validOrder.includes(order)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
+  if (topic && !validTopics.includes(topic)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+  let sql = `SELECT * FROM articles `;
+  const values = [];
 
-  return db
-    .query(`SELECT * FROM articles ORDER BY ${sort_by} ${order.toUpperCase()}`)
-    .then((result) => {
-      const formattedArticles = result.rows.map((article) => {
-        const { body, ...rest } = article;
-        return {
-          ...rest,
-          created_at: new Date(article.created_at).getTime(),
-        };
-      });
-      return formattedArticles;
+  if (topic) {
+    sql += `WHERE articles.topic = $1 `;
+    values.push(topic);
+  }
+
+  sql += `ORDER BY ${sort_by} ${order.toUpperCase()}`;
+
+  return db.query(sql, values).then((result) => {
+    const formattedArticles = result.rows.map((article) => {
+      const { body, ...rest } = article;
+      return {
+        ...rest,
+        created_at: new Date(article.created_at).getTime(),
+      };
     });
+    return formattedArticles;
+  });
 }
 
 function fetchArticleComments(id) {
