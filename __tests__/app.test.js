@@ -119,7 +119,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("200: responds with comments of article_id", () => {
     return request(app)
-      .get("/api/article/1/comments")
+      .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
         expect(comments).toBeSorted({ key: "created_at", descending: true });
@@ -137,7 +137,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("200: responds with no comments of a valid article_id", () => {
     return request(app)
-      .get("/api/article/4/comments")
+      .get("/api/articles/4/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
         expect(comments).toEqual([]);
@@ -195,7 +195,7 @@ describe("POST /api/articles/:article_id/comment", () => {
   });
   test("404: responds with not found when article_id does not exist", () => {
     const comment = {
-      username: "Christian",
+      username: "butter_bridge",
       body: "Hello",
       article_id: 999,
     };
@@ -208,6 +208,7 @@ describe("POST /api/articles/:article_id/comment", () => {
       });
   });
 });
+
 
 describe("DELETE /api/comments/:comment_id", () => {
   test("200: successfully deletes comment based on id", () => {
@@ -234,4 +235,43 @@ describe("DELETE /api/comments/:comment_id", () => {
         expect(body.msg).toBe("Not found");
       });
   });
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("200: responds with added vote in updated article", () => {
+    const updateArticle = { inc_Vote: 1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updateArticle)
+      .expect(200)
+      .then(({ body: { body } }) => {
+        expect(body.votes).toEqual(101);
+        expect(body.article_id).toEqual(1);
+      });
+  });
+
+  test("200: responds with subtracted vote in updated article", () => {
+    const updateArticle = { inc_Vote: -1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updateArticle)
+      .expect(200)
+      .then(({ body: article }) => {
+        expect(article.body.votes).toEqual(99);
+        expect(article.body.article_id).toEqual(1);
+      });
+  });
+
+  test("400: responds with bad request when given invalid vote inc", () => {
+    const updateArticle = { inc_Vote: "Invalid" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(updateArticle)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("Bad request");
+      });
+  });
+
+  // previously did 404 non existent article_id
+
 });

@@ -3,7 +3,11 @@ const {
   fetchArticles,
   fetchArticleComments,
   addComment,
+
   removeComment,
+
+  updateArticle,
+
 } = require("../models/articleModel");
 
 const {
@@ -59,6 +63,7 @@ function postArticleComment(req, res, next) {
     .catch(next);
 }
 
+
 function deleteComment(req, res, next) {
   const { comment_id } = req.params;
   checkCommentExists(comment_id)
@@ -67,6 +72,18 @@ function deleteComment(req, res, next) {
     })
     .then((result) => {
       res.status(204).send();
+
+function patchArticle(req, res, next) {
+  const { article_id } = req.params;
+  const newVotes = req.body;
+
+  checkArticleExists(article_id)
+    .then(() => {
+      return updateArticle(newVotes, article_id);
+    })
+    .then((newArticle) => {
+      res.status(200).send({ body: newArticle });
+
     })
     .catch(next);
 }
@@ -76,5 +93,9 @@ module.exports = {
   getArticles,
   getArticleComment,
   postArticleComment,
+
   deleteComment,
+
+  patchArticle,
+
 };
