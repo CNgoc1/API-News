@@ -59,11 +59,6 @@ function addComment(comment, id) {
     });
 }
 
-
-function removeComment(id) {
-  return db
-    .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING*`, [id])
-
 function updateArticle(newVotes, id) {
   const { inc_Vote } = newVotes;
   if (isNaN(inc_Vote) || !inc_Vote || inc_Vote === 0) {
@@ -82,7 +77,11 @@ function updateArticle(newVotes, id) {
       return result.rows[0];
     });
 }
-
+function removeComment(id) {
+  return db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING*`, [
+    id,
+  ]);
+}
 module.exports = {
   fetchArticle,
   fetchArticles,
@@ -92,5 +91,4 @@ module.exports = {
   removeComment,
 
   updateArticle,
-
 };

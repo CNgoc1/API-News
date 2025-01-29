@@ -7,7 +7,6 @@ const {
   removeComment,
 
   updateArticle,
-
 } = require("../models/articleModel");
 
 const {
@@ -63,7 +62,6 @@ function postArticleComment(req, res, next) {
     .catch(next);
 }
 
-
 function deleteComment(req, res, next) {
   const { comment_id } = req.params;
   checkCommentExists(comment_id)
@@ -72,6 +70,9 @@ function deleteComment(req, res, next) {
     })
     .then((result) => {
       res.status(204).send();
+    })
+    .catch(next);
+}
 
 function patchArticle(req, res, next) {
   const { article_id } = req.params;
@@ -83,7 +84,6 @@ function patchArticle(req, res, next) {
     })
     .then((newArticle) => {
       res.status(200).send({ body: newArticle });
-
     })
     .catch(next);
 }
@@ -97,5 +97,4 @@ module.exports = {
   deleteComment,
 
   patchArticle,
-
 };

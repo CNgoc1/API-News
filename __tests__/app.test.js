@@ -209,7 +209,6 @@ describe("POST /api/articles/:article_id/comment", () => {
   });
 });
 
-
 describe("DELETE /api/comments/:comment_id", () => {
   test("200: successfully deletes comment based on id", () => {
     return request(app)
@@ -235,6 +234,7 @@ describe("DELETE /api/comments/:comment_id", () => {
         expect(body.msg).toBe("Not found");
       });
   });
+});
 
 describe("PATCH /api/articles/:article_id", () => {
   test("200: responds with added vote in updated article", () => {
@@ -273,5 +273,4 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 
   // previously did 404 non existent article_id
-
 });
