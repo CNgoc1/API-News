@@ -233,6 +233,24 @@ describe("GET /api/articles/(query)", () => {
         expect(msg).toBe("Bad request");
       });
   });
+  test("200: responds articles of specified topic query", () => {
+    return request(app)
+      .get("/api/articles/?topic=mitch")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        return articles.forEach((article) => {
+          expect(article.topic).toEqual("mitch");
+        });
+      });
+  });
+  test("400: when given invalid sort_by return bad request", () => {
+    return request(app)
+      .get("/api/articles/?topic=invalid")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("POST /api/articles/:article_id/comment", () => {
