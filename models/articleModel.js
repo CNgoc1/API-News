@@ -15,9 +15,28 @@ function fetchArticle(id) {
     });
 }
 
-function fetchArticles() {
+function fetchArticles(sort_by = "created_at", order = "desc") {
+  validSortBy = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "article_img_url",
+  ];
+  validOrder = ["desc", "asc"];
+
+  if (!validSortBy.includes(sort_by)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+  if (!validOrder.includes(order)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
   return db
-    .query(`SELECT * FROM articles ORDER BY articles.created_at DESC`)
+    .query(`SELECT * FROM articles ORDER BY ${sort_by} ${order.toUpperCase()}`)
     .then((result) => {
       const formattedArticles = result.rows.map((article) => {
         const { body, ...rest } = article;
@@ -87,8 +106,6 @@ module.exports = {
   fetchArticles,
   fetchArticleComments,
   addComment,
-
   removeComment,
-
   updateArticle,
 };
