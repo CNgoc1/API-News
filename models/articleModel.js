@@ -26,7 +26,6 @@ function fetchArticles() {
           created_at: new Date(article.created_at).getTime(),
         };
       });
-      console.log(formattedArticles);
       return formattedArticles;
     });
 }
@@ -60,9 +59,18 @@ function addComment(comment, id) {
     });
 }
 
+function removeComment(id) {
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING*`, [id])
+    .then((result) => {
+      return result.rows[0];
+    });
+}
+
 module.exports = {
   fetchArticle,
   fetchArticles,
   fetchArticleComments,
   addComment,
+  removeComment,
 };

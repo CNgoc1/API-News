@@ -145,7 +145,7 @@ describe("GET /api/articles/(query)", () => {
   });
 });
 
-describe.only("POST /api/articles/:article_id/comment", () => {
+describe("POST /api/articles/:article_id/comment", () => {
   test("201: adds and responds with the new comment", () => {
     const comment = {
       username: "butter_bridge",
@@ -205,6 +205,33 @@ describe.only("POST /api/articles/:article_id/comment", () => {
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Not found");
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("200: successfully deletes comment based on id", () => {
+    return request(app)
+      .delete("/api/comments/2")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("400: responds with bad request when given invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/invalid")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+  test("404: responds with bad request when given non existent comment_id", () => {
+    return request(app)
+      .delete("/api/comments/9999")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not found");
       });
   });
 });
