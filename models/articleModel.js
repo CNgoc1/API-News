@@ -71,7 +71,6 @@ function fetchArticles(sort_by = "created_at", order = "desc", topic) {
         created_at: new Date(article.created_at).getTime(),
       };
     });
-    console.log(formattedArticles);
     return formattedArticles;
   });
 }
