@@ -116,6 +116,7 @@ describe("GET /api/articles/(query)", () => {
         expect(article.article_id).toEqual(result.article_id);
         expect(article.body).toEqual(result.body);
         expect(article.article_img_url).toEqual(result.article_img_url);
+        expect(article.comment_count).toEqual(expect.any(Number));
       });
   });
   test("400: responds with bad request when given invalid article ID", () => {
@@ -126,7 +127,7 @@ describe("GET /api/articles/(query)", () => {
         expect(msg).toEqual("Bad request");
       });
   });
-  test("404: responds with bad request when given non existent article id", () => {
+  test("404: responds with not found when given non existent article id", () => {
     return request(app)
       .get("/api/articles/9999")
       .expect(404)
