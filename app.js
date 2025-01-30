@@ -3,7 +3,7 @@ const endPointsJson = require("./endpoints.json");
 const { getTopics } = require("./controllers/topicsController");
 const { getUsers } = require("./controllers/usersController");
 const {
-  getArticle,
+  getArticleById,
   getArticles,
   getArticleComment,
   postArticleComment,
@@ -21,7 +21,7 @@ app.get("/api", (req, res) => {
 
 app.get("/api/topics", getTopics);
 
-app.get("/api/articles/:article_id", getArticle);
+app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles", getArticles);
 

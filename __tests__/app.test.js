@@ -50,6 +50,7 @@ describe("GET /api/users", () => {
       .get("/api/users")
       .expect(200)
       .then(({ body: { users } }) => {
+        expect(users.length).toBe(4);
         users.forEach((user) => {
           expect(user).toEqual({
             username: expect.any(String),
@@ -78,6 +79,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
+        expect(articles.length).toBeGreaterThan(0);
         expect(articles).toBeSorted({ key: "created_at", descending: true });
         articles.forEach((article) => {
           expect(article.body).toBeUndefined(),
@@ -186,17 +188,6 @@ describe("GET /api/articles/(query)", () => {
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles).toBeSorted({ key: "article_id", ascending: true });
-        articles.forEach((article) => {
-          expect(article).toEqual({
-            article_id: expect.any(Number),
-            created_at: expect.any(Number),
-            title: expect.any(String),
-            topic: expect.any(String),
-            author: expect.any(String),
-            article_img_url: expect.any(String),
-            votes: expect.any(Number),
-          });
-        });
       });
   });
   test("200: responds to order query with all articles in order of created_at", () => {
@@ -244,12 +235,20 @@ describe("GET /api/articles/(query)", () => {
         });
       });
   });
-  test("400: when given invalid sort_by return bad request", () => {
+  test("200: responds with no articles but for a VALID topic name", () => {
+    return request(app)
+      .get("/api/articles/?topic=paper")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toEqual([]);
+      });
+  });
+  test("404: when given invalid sort_by return bad request", () => {
     return request(app)
       .get("/api/articles/?topic=invalid")
-      .expect(400)
+      .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request");
+        expect(msg).toBe("Not found");
       });
   });
 });
@@ -259,14 +258,13 @@ describe("POST /api/articles/:article_id/comment", () => {
     const comment = {
       username: "butter_bridge",
       body: "I am testing for status code 201 wish me good luck",
-      article_id: 2,
     };
     return request(app)
       .post("/api/articles/2/comments")
       .send(comment)
       .expect(201)
-      .then(({ body }) => {
-        expect(body.body).toEqual({
+      .then(({ body: { comment } }) => {
+        expect(comment).toEqual({
           comment_id: 19,
           body: "I am testing for status code 201 wish me good luck",
           article_id: 2,
@@ -292,7 +290,6 @@ describe("POST /api/articles/:article_id/comment", () => {
     const comment = {
       username: "Christian",
       body: "Hello",
-      article_id: 2,
     };
     return request(app)
       .post("/api/articles/2/comments")

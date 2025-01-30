@@ -51,7 +51,7 @@ function fetchArticles(sort_by = "created_at", order = "desc", topic) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
   if (topic && !validTopics.includes(topic)) {
-    return Promise.reject({ status: 400, msg: "Bad request" });
+    return Promise.reject({ status: 404, msg: "Not found" });
   }
   let sql = `SELECT * FROM articles `;
   const values = [];

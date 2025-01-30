@@ -15,7 +15,7 @@ const {
   checkCommentExists,
 } = require("../checks.js");
 
-function getArticle(req, res, next) {
+function getArticleById(req, res, next) {
   const { article_id } = req.params;
   fetchArticle(article_id)
     .then((article) => {
@@ -58,7 +58,7 @@ function postArticleComment(req, res, next) {
       return addComment(body, article_id);
     })
     .then((comment) => {
-      res.status(201).send({ body: comment });
+      res.status(201).send({ comment: comment });
     })
     .catch(next);
 }
@@ -90,12 +90,10 @@ function patchArticle(req, res, next) {
 }
 
 module.exports = {
-  getArticle,
+  getArticleById,
   getArticles,
   getArticleComment,
   postArticleComment,
-
   deleteComment,
-
   patchArticle,
 };
