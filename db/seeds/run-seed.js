@@ -6,4 +6,6 @@ const runSeed = () => {
   return seed(devData).then(() => db.end());
 };
 
+runSeed();
+
 module.exports = runSeed;
