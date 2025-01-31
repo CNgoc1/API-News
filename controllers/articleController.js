@@ -3,17 +3,12 @@ const {
   fetchArticles,
   fetchArticleComments,
   addComment,
-
-  removeComment,
+  addArticle,
 
   updateArticle,
 } = require("../models/articleModel");
 
-const {
-  checkUserExists,
-  checkArticleExists,
-  checkCommentExists,
-} = require("../checks.js");
+const { checkUserExists, checkArticleExists } = require("../checks.js");
 
 function getArticleById(req, res, next) {
   const { article_id } = req.params;
@@ -50,7 +45,7 @@ function postArticleComment(req, res, next) {
   const { article_id } = req.params;
   const { username } = body;
 
-  checkArticleExists(article_id)
+  return checkArticleExists(article_id)
     .then(() => {
       return checkUserExists(username);
     })
@@ -63,14 +58,11 @@ function postArticleComment(req, res, next) {
     .catch(next);
 }
 
-function deleteComment(req, res, next) {
-  const { comment_id } = req.params;
-  checkCommentExists(comment_id)
-    .then(() => {
-      return removeComment(comment_id);
-    })
-    .then((result) => {
-      res.status(204).send();
+function postArticle(req, res, next) {
+  const { body } = req;
+  addArticle(body)
+    .then((newArticle) => {
+      res.status(201).send({ article: newArticle });
     })
     .catch(next);
 }
@@ -95,4 +87,5 @@ module.exports = {
   getArticleComment,
   postArticleComment,
   patchArticle,
+  postArticle,
 };
