@@ -401,8 +401,46 @@ describe("PATCH /api/router/articles/:article_id", () => {
         expect(msg).toEqual("Bad request");
       });
   });
-
   // previously did 404 non existent article_id
+});
+
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: responds with added votes on given comment", () => {
+    const updatedComment = {
+      inc_Votes: 2,
+    };
+    return request(app)
+      .patch("/api/router/comments/1")
+      .send(updatedComment)
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment.votes).toEqual(18);
+        expect(comment.comment_id).toEqual(1);
+      });
+  });
+  test("200: responds with subtracted votes on given comment", () => {
+    const updatedComment = {
+      inc_Votes: -1,
+    };
+    return request(app)
+      .patch("/api/router/comments/1")
+      .send(updatedComment)
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment.votes).toEqual(15);
+        expect(comment.comment_id).toEqual(1);
+      });
+  });
+  test("400: responds with bad request when given invalid vote inc", () => {
+    const updateArticle = { inc_Vote: "Invalid" };
+    return request(app)
+      .patch("/api/router/comments/1")
+      .send(updateArticle)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("Bad request");
+      });
+  });
 });
 
 describe("ROUTES GET /api/router/", () => {

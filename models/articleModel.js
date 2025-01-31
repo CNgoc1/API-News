@@ -133,6 +133,5 @@ module.exports = {
   fetchArticles,
   fetchArticleComments,
   addComment,
-  removeComment,
   updateArticle,
 };
