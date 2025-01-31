@@ -1,5 +1,5 @@
 const apiRouter = require("express").Router();
-const articleRouter = require("./subroutes/articlerouter");
+const articleRouter = require("./subroutes/articleRouter");
 const commentRouter = require("./subroutes/commentRouter");
 const topicsRouter = require("./subroutes/topicsRouter");
 const usersRouter = require("./subroutes/userRouter");
