@@ -2,6 +2,8 @@ const express = require("express");
 const endPointsJson = require("./endpoints.json");
 const apiRouter = require("./routes/api-router");
 
+const apiRouter = require("./routes/api-router");
+
 const app = express();
 
 app.use(express.json());
@@ -9,6 +11,24 @@ app.use(express.json());
 app.get("/api", (req, res) => {
   res.status(200).send({ endpoints: endPointsJson });
 });
+
+
+// app.get("/api/topics", getTopics);
+
+// app.get("/api/articles/:article_id", getArticleById);
+
+// app.get("/api/articles", getArticles);
+
+// app.get("/api/users", getUsers);
+
+// app.get("/api/articles/:article_id/comments", getArticleComment);
+
+// app.post("/api/articles/:article_id/comments", postArticleComment);
+
+// app.delete("/api/comments/:comment_id", deleteComment);
+
+// app.patch("/api/articles/:article_id", patchArticle);
+
 
 app.use("/api/router", apiRouter);
 
