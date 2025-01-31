@@ -62,6 +62,30 @@ describe("GET /api/router/users", () => {
   });
 });
 
+describe("GET /api/router/users/:username", () => {
+  test("200: responds with user object", () => {
+    return request(app)
+      .get("/api/router/users/butter_bridge")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user.length).toBe(1);
+        user.forEach((user) => {
+          expect(user.username).toBe("butter_bridge");
+          expect(user.name).toBe("jonny");
+          expect(user.avatar_url).toBeDefined();
+        });
+      });
+  });
+  test("404: responds with not found when given invalid username", () => {
+    return request(app)
+      .get("/api/router/users/notausername")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not found");
+      });
+  });
+});
+
 describe("Get /api/router/invalid", () => {
   test("404: Responds with not found when given invalid endpoint", () => {
     return request(app)
@@ -296,7 +320,7 @@ describe("POST /api/router/articles/:article_id/comment", () => {
       .send(comment)
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("User not found");
+        expect(msg).toBe("Not found");
       });
   });
   test("404: responds with not found when article_id does not exist", () => {
