@@ -94,6 +94,5 @@ module.exports = {
   getArticles,
   getArticleComment,
   postArticleComment,
-  deleteComment,
   patchArticle,
 };
