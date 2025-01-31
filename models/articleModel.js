@@ -127,6 +127,7 @@ function removeComment(id) {
     id,
   ]);
 }
+
 module.exports = {
   fetchArticle,
   fetchArticles,

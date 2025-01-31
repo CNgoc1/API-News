@@ -28,10 +28,10 @@ describe("GET /api", () => {
   });
 });
 
-describe("GET /api/topics", () => {
+describe("GET /api/router/topics", () => {
   test("200: Responds with an object of all topics", () => {
     return request(app)
-      .get("/api/topics")
+      .get("/api/router/topics")
       .expect(200)
       .then(({ body: { topics } }) => {
         expect(Array.isArray(topics)).toBe(true);
@@ -44,10 +44,10 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe("GET /api/users", () => {
+describe("GET /api/router/users", () => {
   test("200: responds with all users", () => {
     return request(app)
-      .get("/api/users")
+      .get("/api/router/users")
       .expect(200)
       .then(({ body: { users } }) => {
         expect(users.length).toBe(4);
@@ -62,10 +62,10 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("Get /api/invalid", () => {
+describe("Get /api/router/invalid", () => {
   test("404: Responds with not found when given invalid endpoint", () => {
     return request(app)
-      .get("/api/invalid")
+      .get("/api/router/invalid")
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Not found");
@@ -73,10 +73,10 @@ describe("Get /api/invalid", () => {
   });
 });
 
-describe("GET /api/articles", () => {
+describe("GET /api/router/articles", () => {
   test("200: responds with all articles in order of date", () => {
     return request(app)
-      .get("/api/articles")
+      .get("/api/router/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles.length).toBeGreaterThan(0);
@@ -97,7 +97,7 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe("GET /api/articles/(query)", () => {
+describe("GET /api/router/articles/(query)", () => {
   test("200: responds with specific article based on ID", () => {
     const result = {
       title: "Living in the shadow of a great man",
@@ -109,7 +109,7 @@ describe("GET /api/articles/(query)", () => {
         "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
     };
     return request(app)
-      .get("/api/articles/1")
+      .get("/api/router/articles/1")
       .expect(200)
       .then(({ body: { article } }) => {
         expect(article.title).toEqual(result.title);
@@ -123,7 +123,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("400: responds with bad request when given invalid article ID", () => {
     return request(app)
-      .get("/api/articles/invalid")
+      .get("/api/router/articles/invalid")
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toEqual("Bad request");
@@ -131,7 +131,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("404: responds with not found when given non existent article id", () => {
     return request(app)
-      .get("/api/articles/9999")
+      .get("/api/router/articles/9999")
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toEqual("Not found");
@@ -139,7 +139,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("200: responds with comments of article_id", () => {
     return request(app)
-      .get("/api/articles/1/comments")
+      .get("/api/router/articles/1/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
         expect(comments).toBeSorted({ key: "created_at", descending: true });
@@ -157,7 +157,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("200: responds with no comments of a valid article_id", () => {
     return request(app)
-      .get("/api/articles/4/comments")
+      .get("/api/router/articles/4/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
         expect(comments).toEqual([]);
@@ -165,7 +165,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("200: responds to sort-by descending query with all articles in order of title", () => {
     return request(app)
-      .get("/api/articles/?sort_by=title")
+      .get("/api/router/articles/?sort_by=title")
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles).toBeSorted({ key: "title", descending: true });
@@ -184,7 +184,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("200: responds to sort-by query with all articles in order of article_id", () => {
     return request(app)
-      .get("/api/articles/?sort_by=article_id&order=asc")
+      .get("/api/router/articles/?sort_by=article_id&order=asc")
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles).toBeSorted({ key: "article_id", ascending: true });
@@ -192,7 +192,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("200: responds to order query with all articles in order of created_at", () => {
     return request(app)
-      .get("/api/articles/?order=asc")
+      .get("/api/router/articles/?order=asc")
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles).toBeSorted({ key: "created_at", ascending: true });
@@ -211,7 +211,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("400: when given invalid sort_by return bad request", () => {
     return request(app)
-      .get("/api/articles/?sort_by=invalid")
+      .get("/api/router/articles/?sort_by=invalid")
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Bad request");
@@ -219,7 +219,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("400: when given invalid order return bad request", () => {
     return request(app)
-      .get("/api/articles/?sort_by=article_id&order=invalid")
+      .get("/api/router/articles/?sort_by=article_id&order=invalid")
       .expect(400)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Bad request");
@@ -227,7 +227,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("200: responds articles of specified topic query", () => {
     return request(app)
-      .get("/api/articles/?topic=mitch")
+      .get("/api/router/articles/?topic=mitch")
       .expect(200)
       .then(({ body: { articles } }) => {
         return articles.forEach((article) => {
@@ -237,7 +237,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("200: responds with no articles but for a VALID topic name", () => {
     return request(app)
-      .get("/api/articles/?topic=paper")
+      .get("/api/router/articles/?topic=paper")
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles).toEqual([]);
@@ -245,7 +245,7 @@ describe("GET /api/articles/(query)", () => {
   });
   test("404: when given invalid sort_by return bad request", () => {
     return request(app)
-      .get("/api/articles/?topic=invalid")
+      .get("/api/router/articles/?topic=invalid")
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Not found");
@@ -253,14 +253,14 @@ describe("GET /api/articles/(query)", () => {
   });
 });
 
-describe("POST /api/articles/:article_id/comment", () => {
+describe("POST /api/router/articles/:article_id/comment", () => {
   test("201: adds and responds with the new comment", () => {
     const comment = {
       username: "butter_bridge",
       body: "I am testing for status code 201 wish me good luck",
     };
     return request(app)
-      .post("/api/articles/2/comments")
+      .post("/api/router/articles/2/comments")
       .send(comment)
       .expect(201)
       .then(({ body: { comment } }) => {
@@ -279,7 +279,7 @@ describe("POST /api/articles/:article_id/comment", () => {
       username: "butter_bridge",
     };
     return request(app)
-      .post("/api/articles/2/comments")
+      .post("/api/router/articles/2/comments")
       .send(comment)
       .expect(400)
       .then(({ body: { msg } }) => {
@@ -292,7 +292,7 @@ describe("POST /api/articles/:article_id/comment", () => {
       body: "Hello",
     };
     return request(app)
-      .post("/api/articles/2/comments")
+      .post("/api/router/articles/2/comments")
       .send(comment)
       .expect(404)
       .then(({ body: { msg } }) => {
@@ -306,7 +306,7 @@ describe("POST /api/articles/:article_id/comment", () => {
       article_id: 999,
     };
     return request(app)
-      .post("/api/articles/999/comments")
+      .post("/api/router/articles/999/comments")
       .send(comment)
       .expect(404)
       .then(({ body: { msg } }) => {
@@ -315,10 +315,10 @@ describe("POST /api/articles/:article_id/comment", () => {
   });
 });
 
-describe("DELETE /api/comments/:comment_id", () => {
+describe("DELETE /api/router/comments/:comment_id", () => {
   test("200: successfully deletes comment based on id", () => {
     return request(app)
-      .delete("/api/comments/2")
+      .delete("/api/router/comments/2")
       .expect(204)
       .then(({ body }) => {
         expect(body).toEqual({});
@@ -326,7 +326,7 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
   test("400: responds with bad request when given invalid comment_id", () => {
     return request(app)
-      .delete("/api/comments/invalid")
+      .delete("/api/router/comments/invalid")
       .expect(400)
       .then(({ body }) => {
         expect(body.msg).toBe("Bad request");
@@ -334,7 +334,7 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
   test("404: responds with bad request when given non existent comment_id", () => {
     return request(app)
-      .delete("/api/comments/9999")
+      .delete("/api/router/comments/9999")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Not found");
@@ -342,11 +342,11 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-describe("PATCH /api/articles/:article_id", () => {
+describe("PATCH /api/router/articles/:article_id", () => {
   test("200: responds with added vote in updated article", () => {
     const updateArticle = { inc_Vote: 1 };
     return request(app)
-      .patch("/api/articles/1")
+      .patch("/api/router/articles/1")
       .send(updateArticle)
       .expect(200)
       .then(({ body: { body } }) => {
@@ -358,7 +358,7 @@ describe("PATCH /api/articles/:article_id", () => {
   test("200: responds with subtracted vote in updated article", () => {
     const updateArticle = { inc_Vote: -1 };
     return request(app)
-      .patch("/api/articles/1")
+      .patch("/api/router/articles/1")
       .send(updateArticle)
       .expect(200)
       .then(({ body: article }) => {
@@ -370,7 +370,7 @@ describe("PATCH /api/articles/:article_id", () => {
   test("400: responds with bad request when given invalid vote inc", () => {
     const updateArticle = { inc_Vote: "Invalid" };
     return request(app)
-      .patch("/api/articles/1")
+      .patch("/api/router/articles/1")
       .send(updateArticle)
       .expect(400)
       .then(({ body: { msg } }) => {
@@ -379,4 +379,15 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 
   // previously did 404 non existent article_id
+});
+
+describe("ROUTES GET /api/router/", () => {
+  test("200: responds with correct message", () => {
+    return request(app)
+      .get("/api/router")
+      .expect(200)
+      .then((result) => {
+        expect(result.text).toEqual("All OK from /api");
+      });
+  });
 });
