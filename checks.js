@@ -40,4 +40,20 @@ function checkCommentExists(comment_id) {
     });
 }
 
-module.exports = { checkUserExists, checkArticleExists, checkCommentExists };
+function checktopicsExists(topic) {
+  return db
+    .query(`SELECT * FROM topics WHERE topics.slug = $1`, [topic])
+    .then((result) => {
+      if (result.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: "Not found" });
+      }
+      return result;
+    });
+}
+
+module.exports = {
+  checkUserExists,
+  checkArticleExists,
+  checkCommentExists,
+  checktopicsExists,
+};

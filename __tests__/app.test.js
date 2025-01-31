@@ -276,7 +276,76 @@ describe("GET /api/router/articles/(query)", () => {
       });
   });
 });
-
+describe("POST /api/router/articles", () => {
+  test("201: adds and responds with new article", () => {
+    const article = {
+      author: "butter_bridge",
+      title: "Test title",
+      body: "Test body",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/router/articles")
+      .send(article)
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          body: expect.any(String),
+          topic: expect.any(String),
+          article_img_url: expect.any(String),
+          article_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          comment_count: expect.any(Number),
+        });
+      });
+  });
+  test("404: responds with not found when given non existent author", () => {
+    const article = {
+      author: "Christian",
+      title: "Test title",
+      body: "Test body",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/router/articles")
+      .send(article)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not found");
+      });
+  });
+  test("404: responds with not found when given non existent topic", () => {
+    const article = {
+      author: "butter_bridge",
+      title: "Test title",
+      body: "Test body",
+      topic: "Invalid",
+    };
+    return request(app)
+      .post("/api/router/articles")
+      .send(article)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Not found");
+      });
+  });
+  test("400: responds with bad request when missing properties of an article", () => {
+    const article = {
+      author: "butter_bridge",
+      topic: "Invalid",
+    };
+    return request(app)
+      .post("/api/router/articles")
+      .send(article)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+});
 describe("POST /api/router/articles/:article_id/comment", () => {
   test("201: adds and responds with the new comment", () => {
     const comment = {

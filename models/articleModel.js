@@ -1,3 +1,4 @@
+const { checktopicsExists, checkUserExists } = require("../checks");
 const db = require("../db/connection");
 
 function fetchArticle(id) {
@@ -104,6 +105,34 @@ function addComment(comment, id) {
     });
 }
 
+function addArticle(article) {
+  const {
+    author,
+    title,
+    body,
+    topic,
+    article_img_url = "default img url",
+  } = article;
+  if (!author || !title || !body || !topic) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
+  return checktopicsExists(topic)
+    .then(() => {
+      return checkUserExists(author);
+    })
+    .then(() => {
+      return db.query(
+        `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+        [author, title, body, topic, article_img_url]
+      );
+    })
+    .then((result) => {
+      const newArticle = result.rows[0];
+      return { ...newArticle, comment_count: 0 };
+    });
+}
+
 function updateArticle(newVotes, id) {
   const { inc_Vote } = newVotes;
   if (isNaN(inc_Vote) || !inc_Vote || inc_Vote === 0) {
@@ -122,11 +151,6 @@ function updateArticle(newVotes, id) {
       return result.rows[0];
     });
 }
-function removeComment(id) {
-  return db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING*`, [
-    id,
-  ]);
-}
 
 module.exports = {
   fetchArticle,
@@ -134,4 +158,5 @@ module.exports = {
   fetchArticleComments,
   addComment,
   updateArticle,
+  addArticle,
 };
