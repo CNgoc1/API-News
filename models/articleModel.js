@@ -76,18 +76,30 @@ function fetchArticles(sort_by = "created_at", order = "desc", topic) {
   });
 }
 
-function fetchArticleComments(id) {
+function fetchArticleComments(id, limit = 10, page = 1) {
   if (id < 1 || isNaN(id) || !id) {
     return Promise.reject({ msg: "Bad request", status: 400 });
   }
-  return db
-    .query(
-      `SELECT * FROM comments WHERE comments.article_id = $1 ORDER BY comments.created_at DESC`,
-      [id]
-    )
-    .then((result) => {
-      return result.rows;
-    });
+  if (limit < 1 || isNaN(limit) || !limit) {
+    return Promise.reject({ msg: "Bad request", status: 400 });
+  }
+  if (page < 1 || isNaN(page) || !page) {
+    return Promise.reject({ msg: "Bad request", status: 400 });
+  }
+  const queryValues = [id];
+
+  let sql = `SELECT * FROM comments WHERE comments.article_id = $${queryValues.length} ORDER BY comments.created_at DESC`;
+
+  if (limit && page) {
+    sql += ` LIMIT $${queryValues.length + 1} OFFSET $${
+      queryValues.length + 2
+    }`;
+    queryValues.push(limit, page);
+  }
+  1;
+  return db.query(sql, queryValues).then((result) => {
+    return result.rows;
+  });
 }
 
 function addComment(comment, id) {

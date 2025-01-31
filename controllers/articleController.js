@@ -30,9 +30,10 @@ function getArticles(req, res, next) {
 
 function getArticleComment(req, res, next) {
   const { article_id } = req.params;
+  const { limit, page } = req.query;
   checkArticleExists(article_id)
     .then(() => {
-      return fetchArticleComments(article_id);
+      return fetchArticleComments(article_id, limit, page);
     })
     .then((result) => {
       res.status(200).send({ comments: result });

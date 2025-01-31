@@ -275,6 +275,38 @@ describe("GET /api/router/articles/(query)", () => {
         expect(msg).toBe("Not found");
       });
   });
+  test("200: responds with page with 10 comments", () => {
+    return request(app)
+      .get("/api/router/articles/1/comments?limit=10&page=1")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toEqual(10);
+      });
+  });
+  test("200: empty but valid page", () => {
+    return request(app)
+      .get("/api/router/articles/1/comments?limit=10&page=1000")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toEqual([]);
+      });
+  });
+  test("400: invalid limit responds with bad request", () => {
+    return request(app)
+      .get("/api/router/articles/1/comments?limit=invalid&page=1")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("Bad request");
+      });
+  });
+  test("400: invalid page responds with bad request", () => {
+    return request(app)
+      .get("/api/router/articles/1/comments?limit=10&page=invalid")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toEqual("Bad request");
+      });
+  });
 });
 describe("POST /api/router/articles", () => {
   test("201: adds and responds with new article", () => {
