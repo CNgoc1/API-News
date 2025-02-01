@@ -119,6 +119,43 @@ describe("GET /api/router/articles", () => {
         });
       });
   });
+  test("200: responds with articles limited to 8 per page", () => {
+    return request(app)
+      .get("/api/router/articles?limit=8&page=1")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toEqual(8);
+      });
+  });
+  test("200: responds with articles defaulted to 10", () => {
+    return request(app)
+      .get("/api/router/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toEqual(10);
+      });
+  });
+  test("200: responds with no articles when given a valid page and limit", () => {
+    return request(app)
+      .get("/api/router/articles?limit=10&page=1000")
+      .expect(200);
+  });
+  test("400: responds with bad request when given invalid limit", () => {
+    return request(app)
+      .get("/api/router/articles?limit=invalid&page=1")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
+  test("400: responds with bad request when given invalid page", () => {
+    return request(app)
+      .get("/api/router/articles?limit=10&page=invalid")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request");
+      });
+  });
 });
 
 describe("GET /api/router/articles/(query)", () => {

@@ -30,7 +30,13 @@ function fetchArticle(id) {
     });
 }
 
-function fetchArticles(sort_by = "created_at", order = "desc", topic) {
+function fetchArticles(
+  sort_by = "created_at",
+  order = "desc",
+  topic,
+  page = 1,
+  limit = 10
+) {
   const validSortBy = [
     "article_id",
     "title",
@@ -45,6 +51,14 @@ function fetchArticles(sort_by = "created_at", order = "desc", topic) {
 
   const validTopics = ["mitch", "cats", "paper"];
 
+  if (!page || isNaN(page) || page < 1) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
+  if (!limit || isNaN(limit) || limit < 1) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
   if (!validSortBy.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
@@ -58,11 +72,16 @@ function fetchArticles(sort_by = "created_at", order = "desc", topic) {
   const values = [];
 
   if (topic) {
-    sql += `WHERE articles.topic = $1 `;
+    sql += `WHERE articles.topic = $${values.length + 1} `;
     values.push(topic);
   }
 
   sql += `ORDER BY ${sort_by} ${order.toUpperCase()}`;
+
+  if (limit && page) {
+    sql += ` LIMIT $${values.length + 1} OFFSET $${values.length + 2}`;
+    values.push(limit, (page - 1) * limit);
+  }
 
   return db.query(sql, values).then((result) => {
     const formattedArticles = result.rows.map((article) => {
@@ -96,7 +115,7 @@ function fetchArticleComments(id, limit = 10, page = 1) {
     }`;
     queryValues.push(limit, page);
   }
-  1;
+
   return db.query(sql, queryValues).then((result) => {
     return result.rows;
   });
