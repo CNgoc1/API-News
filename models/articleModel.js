@@ -88,7 +88,7 @@ function fetchArticles(
       const { body, ...rest } = article;
       return {
         ...rest,
-        created_at: new Date(article.created_at).getTime(),
+        created_at: article.created_at.toLocaleDateString(),
       };
     });
     return formattedArticles;
